@@ -89,19 +89,19 @@ read_cancer <- function(codes,file='cancer_participant.csv') {
 		return(read.table(text = "",col.names = cancer_header))
 	}
 	codes2=paste(codes,collapse='\\|')
-	grepcode=paste('grep \'',codes2,'\' ', file, '> temp.csv',sep='')
+	grepcode=paste('grep \'',codes2,'\' ', file, '> temp.csv',sep='') #it is possible that this will grep out other cancers too, if someone has multiple, as this extracts lines not columns
 	system(grepcode)
 	if (as.numeric(file.info('temp.csv')[1])==0){
 		return(read.table(text = "",col.names = cancer_header))
 	}
 	data=read.csv('temp.csv',header=FALSE)
 	colnames(data)=colnames(read.csv(file="cancer_participant.csv",nrows=1))
-	ids=rep(data[,1],17) # there are 17 different cancer columns in UK Biobank's data
+	ids=rep(data[,1],17) # there are 17 different cancer columns in UK Biobank's data, this works by stretching the 17xn columns into a 1 x 17*n one dimensional structure
 	dateslist=unlist(data[,c('p40005_i0','p40005_i1','p40005_i2','p40005_i3','p40005_i4','p40005_i5','p40005_i6','p40005_i7','p40005_i8','p40005_i9','p40005_i10','p40005_i11','p40005_i12','p40005_i13','p40005_i14','p40005_i15','p40005_i16')])
 	cancerslist=unlist(data[,c('p40006_i0','p40006_i1','p40006_i2','p40006_i3','p40006_i4','p40006_i5','p40006_i6','p40006_i7','p40006_i8','p40006_i9','p40006_i10','p40006_i11','p40006_i12','p40006_i13','p40006_i14','p40006_i15','p40006_i16')])
 	data=data.frame(eid=ids,date=dateslist,cancer=cancerslist)%>%mutate(date=as.Date(date))
 	codes3=paste(codes,collapse='|')
-	data=data[grep(codes3,data$cancer),]
+	data=data[grep(codes3,data$cancer),] #if someone does have multiple cancers, now everything is one cancer per line, this grep will get rid of those records
 	return(data)
 }
 
@@ -129,6 +129,16 @@ read_selfreport_cancer <- function(codes,file='selfreport_participant.csv'){
 	}
 	data_frame=data.frame(eid=data[outlines,1])
 	return(data_frame)
+}
+
+first_occurence=function(ICD10='',GP='',OPCS='',cancer=''){
+    ICD10_records=read_ICD10(ICD10)%>%mutate(date=epistart)%>%select(eid,date)%>%mutate(source='HES')
+    OPCS_records=read_OPCS(OPCS)%>%mutate(date=opdate)%>%select(eid,date)%>%mutate(source='OPCS')
+    GP_records=read_GP(GP)%>%mutate(date=event_dt)%>%select(eid,date)%>%mutate(source='GP')
+    cancer_records=read_cancer(cancer)%>%select(eid,date)%>%mutate(source='Cancer_Registry')
+    all_records=rbind(ICD10_records,OPCS_records)%>%rbind(GP_records)%>%rbind(cancer_records)%>%mutate(date=as.Date(date))
+    all_records=all_records%>%group_by(eid)%>%top_n(-1,date)%>%distinct()
+	return(all_records)
 }
 
 # # Below are some examples of how to read in some random codes for a few different things
