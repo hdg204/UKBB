@@ -79,4 +79,6 @@ all_data = full_join(baseline, frozen_shoulder)
 
 # Known issues
 
-The script relies on grepping entire lines from a CSV. As ICD9 codes are purely numeric, these can match on participant IDs and cannot currently be read in. I'm working on replacing the grep with an awk command which should address this issue and allow ICD9 codes to be read
+The script relies on grepping entire lines from a CSV. As ICD9 codes are purely numeric, these can match on participant IDs and cannot currently be read in. I'm working on replacing the grep with an awk command which should address this issue and allow ICD9 codes to be read.
+
+The line level grep might also accidentally tag other things that happen to match. This is still in testing and I'd recommend looking at the data to check there isn't anything in there you don't want.
