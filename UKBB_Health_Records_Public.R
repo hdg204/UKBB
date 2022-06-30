@@ -40,7 +40,14 @@ read_GP <- function(codes,file='GP_gp_clinical.csv') {
 	data=read.csv('temp.csv',header=FALSE)
 	colnames(data)=c('eid', 'data_provider', 'event_dt', 'read_2', 'read_3', 'value1', 'value2', 'value3')
 	data=data%>%mutate(event_dt=as.Date(event_dt)) #turn event_dt into a date variable
-	return(data)
+	
+	#because of .s in GP code, other stuff might have been read in due to the grep, so I need a secondary filter here
+	data2=NULL
+	for (i in 1:length(codes)){
+		data2=rbind(data2,filter(data,read_3==codes[i]))
+		data2=rbind(data2,filter(data,read_2==codes[i]))
+	}
+	return(data2)
 }
 
 # This is basically a copy paste of the above script and works in the same way but for OPCS codes
