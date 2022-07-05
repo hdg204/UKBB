@@ -2,7 +2,7 @@
 # read_gp will read data from the gp records using read_3 or read_2 codes
 # read_OPCS will read data from the operations records using OPCS4 codes
 # read_ICD10 will read data from the HES records using ICD10 codes
-# A tutorial on how to use these functions is available on teams, or from Harry Green (h.d.green@exeter.ac.uk)
+# A tutorial on how to use these functions is available on github, or from Harry Green (h.d.green@exeter.ac.uk)
 
 # While the functions are designed to take the codes above, since all of the filtering relies on a system-level grep it is also possible to filter on a participant ID instead of a healthcare code.
 
@@ -147,6 +147,37 @@ first_occurence=function(ICD10='',GP='',OPCS='',cancer=''){
     all_records=all_records%>%group_by(eid)%>%top_n(-1,date)%>%distinct()
 	return(all_records)
 }
+
+
+system('dx download file-GBZy48QJQFKzXbXv25xk62ff') # download GP scripts
+# This function reads GP scripts in from the file GP_gp_scripts.csv. It first greps the file through system so it doesn't read in any of the wrong codes. This function was written by Jess O'Loughlin
+read_GP_scripts <- function(codes) {
+  gp_header=c('eid', 'read_2','bnf_code', 'dmd_code', 'drug_name', 'data_provider','issue_date','quantity') # this is the names of all the columns that will be outputted
+  #check if there are any codes inputted, if not, just return an empty dataframe with the correct headers
+  if (codes[1]==''){
+    return(read.table(text = "",col.names = gp_header))
+  }
+  codes2=paste(codes,collapse='\\|') #turn, e.g. 'code1,code2 into code1\\|code2 for use in a grep
+  grepcode=paste('grep \'',codes2,'\' ', file, '> temp.csv',sep='') #build a grep command using paste
+  system(grepcode) #grep all codes inputted from the GP clinical table into temp.csv
+  #if the file temp.csv is empty, return the empty dataframe
+  if (as.numeric(file.info('temp.csv')[1])==0){
+    return(read.table(text = "",col.names = gp_header))
+  }
+  data=read.csv('temp.csv',header=FALSE)
+  colnames(data)=c('eid', 'read_2','bnf_code', 'dmd_code', 'drug_name', 'data_provider','issue_date','quantity')
+  data=data%>%mutate(issue_date=as.Date(issue_date)) #turn event_dt into a date variable
+  #because of .s in GP code, other stuff might have been read in due to the grep, so I need a secondary filter here
+  data2=NULL
+  for (i in 1:length(codes)){
+    data2=rbind(data2,filter(data,dmd_code==codes[i]))
+    data2=rbind(data2,filter(data,read_2==codes[i]))
+    data2=rbind(data2,filter(data,bnf_code==codes[i]))
+  }
+  return(data2)
+}
+
+
 
 # # Below are some examples of how to read in some random codes for a few different things
 # GP_codes=c('XE2eD','22K..')
