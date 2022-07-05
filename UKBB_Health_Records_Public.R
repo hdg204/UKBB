@@ -151,7 +151,7 @@ first_occurence=function(ICD10='',GP='',OPCS='',cancer=''){
 
 system('dx download file-GBZy48QJQFKzXbXv25xk62ff') # download GP scripts
 # This function reads GP scripts in from the file GP_gp_scripts.csv. It first greps the file through system so it doesn't read in any of the wrong codes. This function was written by Jess O'Loughlin
-read_GP_scripts <- function(codes) {
+read_GP_scripts=function(codes){
   gp_header=c('eid', 'read_2','bnf_code', 'dmd_code', 'drug_name', 'data_provider','issue_date','quantity') # this is the names of all the columns that will be outputted
   #check if there are any codes inputted, if not, just return an empty dataframe with the correct headers
   if (codes[1]==''){
