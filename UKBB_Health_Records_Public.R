@@ -10,15 +10,16 @@ library('dplyr')
 
 # First download my files into the R session. You can delete lines if data source not necessary, but it's fairly fast even if you don't
 system('dx download file-GBZy48QJQFKk9XZx9gZjjXKv') # download GP records
+system('dx download file-GBZy48QJQFKzXbXv25xk62ff') # download GP scripts
 system('dx download file-GBZxv8jJG9GkV0GYJVFFXY43') # download HES Diagnoses
 system('dx download file-GBZxv8jJG9GZ2Qqz1825052Z') # download HES Records
 system('dx download file-GBZxv8jJG9Gpq9J38bkFf9k8') # download OPCS Records
 system('dx download file-GBZxjv0JQX22ZZX18yx1995G') # download Cancer_Registry
 system('dx download file-GBjk2V0J6G86jK7vJYxKp0JX') # download self report
 system('dx download file-GFVkYq8JZ8kk76Kg0GG7yq5K') # download treatment
-system('dx download file-GBjk0BjJZ8kX2J79Gqk3XkB6') # download self report data indices
-system('dx download file-GBjk0BjJZ8kp68JG77Q1QY38') # download self report data indices
-system('dx download file-GFVkkZQJ58kGxZ9jB5bkBJ02')
+system('dx download file-GBjk0BjJZ8kX2J79Gqk3XkB6') # download data coding 3
+system('dx download file-GBjk0BjJZ8kp68JG77Q1QY38') # download data coding 4
+system('dx download file-GFVkkZQJ58kGxZ9jB5bkBJ02') # download data coding 6
 
 # This function reads GP records in from the file GP_gp_clinical.csv. It first greps the file through system so it doesn't read in any of the wrong codes. I have experimented with a few different options for this and I found this to be the fastest
 read_GP <- function(codes,file='GP_gp_clinical.csv') {
@@ -160,6 +161,39 @@ first_occurence=function(ICD10='',GP='',OPCS='',cancer=''){
     all_records=rbind(ICD10_records,OPCS_records)%>%rbind(GP_records)%>%rbind(cancer_records)%>%mutate(date=as.Date(date))
     all_records=all_records%>%group_by(eid)%>%top_n(-1,date)%>%distinct()
 	return(all_records)
+}
+
+
+# This function reads GP scripts in from the file GP_gp_scripts.csv. It first greps the file through system so it doesn't read in any of the wrong codes. I have experimented with a few different options for this and I found this to be the fastest
+read_GP_scripts <- function(codes,file='GP_gp_scripts.csv') {
+  gp_header=c('eid','data_provider','issue_date','read_2','dmd_code','bnf_code','drug_name','quantity') # this is the names of all the columns that will be outputted
+  
+  #check if there are any codes inputted, if not, just return an empty dataframe with the correct headers
+  if (codes[1]==''){
+    return(read.table(text = "",col.names = gp_header))
+  }
+  
+  codes2=paste(codes,collapse='\\|') #turn, e.g. 'code1,code2 into code1\\|code2 for use in a grep
+  grepcode=paste('grep \'',codes2,'\' ', file, '> temp.csv',sep='') #build a grep command using paste
+  system(grepcode) #grep all codes inputted from the GP clinical table into temp.csv
+  
+  #if the file temp.csv is empty, return the empty dataframe
+  if (as.numeric(file.info('temp.csv')[1])==0){
+    return(read.table(text = "",col.names = gp_header))
+  }
+  
+  data=read.csv('temp.csv',header=FALSE)
+  colnames(data)=gp_header
+  data=data%>%mutate(issue_date=as.Date(issue_date)) #turn event_dt into a date variable
+  
+  #because of .s in GP code, other stuff might have been read in due to the grep, so I need a secondary filter here
+  data2=NULL
+  for (i in 1:length(codes)){
+    data2=rbind(data2,filter(data,dmd_code==codes[i]))
+    data2=rbind(data2,filter(data,read_2==codes[i]))
+    data2=rbind(data2,filter(data,bnf_code==codes[i]))
+  }
+  return(data2)
 }
 
 # # Below are some examples of how to read in some random codes for a few different things
