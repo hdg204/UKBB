@@ -15,9 +15,10 @@ system('dx download file-GBZxv8jJG9GZ2Qqz1825052Z') # download HES Records
 system('dx download file-GBZxv8jJG9Gpq9J38bkFf9k8') # download OPCS Records
 system('dx download file-GBZxjv0JQX22ZZX18yx1995G') # download Cancer_Registry
 system('dx download file-GBjk2V0J6G86jK7vJYxKp0JX') # download self report
+system('dx download file-GFVkYq8JZ8kk76Kg0GG7yq5K') # download treatment
 system('dx download file-GBjk0BjJZ8kX2J79Gqk3XkB6') # download self report data indices
 system('dx download file-GBjk0BjJZ8kp68JG77Q1QY38') # download self report data indices
-
+system('dx download file-GFVkkZQJ58kGxZ9jB5bkBJ02')
 
 # This function reads GP records in from the file GP_gp_clinical.csv. It first greps the file through system so it doesn't read in any of the wrong codes. I have experimented with a few different options for this and I found this to be the fastest
 read_GP <- function(codes,file='GP_gp_clinical.csv') {
@@ -132,6 +133,19 @@ read_selfreport_cancer <- function(codes,file='selfreport_participant.csv'){
 	for (i in 1:length(codes)){
 		if (length(coding3[coding3$coding==codes[1],'meaning'])>0){
 			outlines=c(outlines,grep(coding3[coding3$coding==codes[i],'meaning'],data$p20001_i0))
+		}
+	}
+	data_frame=data.frame(eid=data[outlines,1])
+	return(data_frame)
+}
+
+read_treatment <- function(codes,file='treatment_participant.csv'){
+	data=read.csv(file)
+	coding4=read.csv('coding4.tsv',sep='\t')%>%filter(coding>1)
+	outlines=NULL
+	for (i in 1:length(codes)){
+		if (length(coding4[coding4$coding==codes[1],'meaning'])>0){
+			outlines=c(outlines,grep(coding4[coding4$coding==codes[i],'meaning'],data$Treatment.medication.code...Instance.0))
 		}
 	}
 	data_frame=data.frame(eid=data[outlines,1])
