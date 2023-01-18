@@ -108,6 +108,9 @@ generate_grs=function(file_in){
   
   a=dosage_matrix[,2:(nsnps+1)] #this makes a new matrix with only the columns for the genetic data
   b=matrix(grs_in$weights) 
+  missing=which(is.na(a[1,]))
+  a=a[,-missing]
+  b=b[-missing]
   grs=a%*%b #this neat matrix multiplication just makes the GRS
   grs_df=data.frame(eid=eid,grs=grs)
   return(grs_df)
