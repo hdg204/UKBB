@@ -91,6 +91,45 @@ read_ICD10 <- function(codes,diagfile='HES_hesin_diag.csv',recordfile='HES_hesin
 	return(data2)
 }
 
+# read_ICD9 is also complicated by the fact that the codes are often just numerical, which is more likely to provide false matches than an A00.0 type code
+read_ICD9 <- function(codes,diagfile='HES_hesin_diag.csv',recordfile='HES_hesin.csv') {
+	icd9_header=c('dnx_hesin_diag_id','eid','ins_index','arr_index','level','diag_icd9','diag_icd10','dnx_hesin_id','epistart','epiend')
+	codes=as.character(codes)
+	if(codes[1]==''){
+		return(read.table(text = "",col.names = icd9_header))
+	}
+	codes2=paste(codes,collapse='\\|')
+	grepcode=paste('grep \'',codes2,'\' ', diagfile, '> temp.csv',sep='')
+	system(grepcode)
+	if (as.numeric(file.info('temp.csv')[1])==0){
+		return(read.table(text = "",col.names = icd9_header))
+	}
+	data=read.csv('temp.csv',header=FALSE)
+	colnames(data)=c('dnx_hesin_diag_id','eid','ins_index','arr_index','level','diag_icd9','diag_icd10')
+	
+	#this makes a vector of everything before the space
+	icd9_code_data=sapply(strsplit(data$diag_icd9, " "), function(x) x[1])
+	
+	#make a vector of falses
+	vec=rep(FALSE,length(icd9_code_data))
+	#if the code is at the start of the icd9 codes, make that vector true
+	
+	for (j in 1:length(codes)){
+		vec=vec+grepl(paste0("^", codes[j]), icd9_code_data)		
+	}
+	vec=vec>0.5
+	data=data[vec,]
+	
+	
+	#I think that the ins index is an index for that hospital admission so joining on those should add the dates
+	records=read.csv(recordfile)
+	data2=inner_join(data,records)
+	data2=data2%>%mutate(epistart=as.Date(epistart),epiend=as.Date(epiend))
+	return(data2)
+}
+
+
+
 read_cancer <- function(codes,file='cancer_participant.csv') {
 	#this function reads from the cancer registry, which is in a wide format and requires a much different way of extracting the data
 	cancer_header=c('eid','date','cancer')
