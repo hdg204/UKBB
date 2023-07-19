@@ -10,13 +10,15 @@ This repository contains an ensemble of functions for use analysing the UKBB rec
 
 `read_ICD10` Reads data from the HES records using ICD10. It performs an inner join on the diagnosis and returns the eid, code, in date, out date, and whether it was a primary or secondary diagnosis
 
+`read_ICD9` Reads data from the HES records using ICD9. It performs an inner join on the diagnosis but there is no data on ICD9 dates of diagnosis in the UKBB HES records
+
 `read_cancer` Reads data from the Cancer Registry data using ICD10. It returns the eid, date, and cancer type
 
 `read_selfreport` Reads data from the UK Biobank's non-cancer self-reported illness codes. It takes a list of codes from https://biobank.ctsu.ox.ac.uk/crystal/coding.cgi?id=6 and returns a list of matching IDs
 
 `read_selfreport_cancer` Reads data from the UK Biobank's cancer self-reported illness codes. It takes a list of codes from https://biobank.ctsu.ox.ac.uk/crystal/coding.cgi?id=3 and returns a list of matching IDs
 
-`first_occurence` takes a list of ICD10, read3, OPCS and cancer ICD10 codes and returns the date and source of the first occurence of disease
+`first_occurence` takes a list of ICD10, read3, OPCS and cancer ICD10 codes and returns the date and source of the first occurrence of disease. It does not use ICD9, because the dates are not present in these records.
 
 
 # How to Use
