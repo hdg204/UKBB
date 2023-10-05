@@ -9,7 +9,8 @@
 library('dplyr')
 
 # First download my files into the R session. You can delete lines if data source not necessary, but it's fairly fast even if you don't
-system('dx download file-GZKXxpQJKVzZ0BgzQZ1YYj9Z') # download GP records
+system('dx download file-GZKXxpQJKVzZ0BgzQZ1YYj9Z') # download GP registrations
+system('dx download file-GZKXxpQJKVzVb7gQvQbYfxKF') # download GP clinical
 system('dx download file-GZKXxpQJKVzxKb0FYfGg28v9') # download GP scripts
 system('dx download file-GZKXVqjJX72FFKKVYKqfj40z') # download HES Diagnoses
 system('dx download file-GZKXVqjJX729j2vjbGb0BYfJ') # download HES Records
