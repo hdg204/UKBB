@@ -55,7 +55,7 @@ read_GP <- function(codes,file='GP_gp_clinical.csv') {
 
 # This is basically a copy paste of the above script and works in the same way but for OPCS codes
 read_OPCS <- function(codes,filename='HES_hesin_oper.csv') {
-	opcs_header=c('dnx_hesin_oper_id','eid','ins_index','arr_index','level','opdate','oper3','oper4')
+	opcs_header=c('dnx_hesin_oper_id','eid','ins_index','arr_index','opdate','level','oper3','oper3_nb','oper4','oper4_nb','posopdur','preopdur')
 	if(codes[1]==''){
 		return(read.table(text = "",col.names = opcs_header))
 	}
@@ -84,8 +84,9 @@ read_ICD10 <- function(codes,diagfile='HES_hesin_diag.csv',recordfile='HES_hesin
 		return(read.table(text = "",col.names = icd10_header))
 	}
 	data=read.csv('temp.csv',header=FALSE)
-	colnames(data)=c('dnx_hesin_diag_id','eid','ins_index','arr_index','level','diag_icd9','diag_icd10')
+	colnames(data)=c('dnx_hesin_diag_id','eid','ins_index','arr_index','classification','diag_icd9','diag_icd9_add','diag_icd10','diag_icd10_add')
 	#I think that the ins index is an index for that hospital admission so joining on those should add the dates
+	data=data%>%select(dnx_hesin_diag_id,eid,ins_index,arr_index,classification,diag_icd9,diag_icd10)
 	records=read.csv(recordfile)
 	data2=inner_join(data,records)
 	data2=data2%>%mutate(epistart=as.Date(epistart),epiend=as.Date(epiend))
@@ -106,7 +107,9 @@ read_ICD9 <- function(codes,diagfile='HES_hesin_diag.csv',recordfile='HES_hesin.
 		return(read.table(text = "",col.names = icd9_header))
 	}
 	data=read.csv('temp.csv',header=FALSE)
-	colnames(data)=c('dnx_hesin_diag_id','eid','ins_index','arr_index','level','diag_icd9','diag_icd10')
+	colnames(data)=c('dnx_hesin_diag_id','eid','ins_index','arr_index','classification','diag_icd9','diag_icd9_add','diag_icd10','diag_icd10_add')
+	#I think that the ins index is an index for that hospital admission so joining on those should add the dates
+	data=data%>%select(dnx_hesin_diag_id,eid,ins_index,arr_index,classification,diag_icd9,diag_icd10)
 	
 	#this makes a vector of everything before the space
 	icd9_code_data=sapply(strsplit(data$diag_icd9, " "), function(x) x[1])
@@ -145,12 +148,34 @@ read_cancer <- function(codes,file='cancer_participant.csv') {
 	}
 	data=read.csv('temp.csv',header=FALSE)
 	colnames(data)=colnames(read.csv(file="cancer_participant.csv",nrows=1))
-	ids=rep(data[,1],17) # there are 17 different cancer columns in UK Biobank's data, this works by stretching the 17xn columns into a 1 x 17*n one dimensional structure
-	dateslist=unlist(data[,c('p40005_i0','p40005_i1','p40005_i2','p40005_i3','p40005_i4','p40005_i5','p40005_i6','p40005_i7','p40005_i8','p40005_i9','p40005_i10','p40005_i11','p40005_i12','p40005_i13','p40005_i14','p40005_i15','p40005_i16')])
-	cancerslist=unlist(data[,c('p40006_i0','p40006_i1','p40006_i2','p40006_i3','p40006_i4','p40006_i5','p40006_i6','p40006_i7','p40006_i8','p40006_i9','p40006_i10','p40006_i11','p40006_i12','p40006_i13','p40006_i14','p40006_i15','p40006_i16')])
-	data=data.frame(eid=ids,date=dateslist,cancer=cancerslist)%>%mutate(date=as.Date(date))
+	ids=rep(data[,1],22) # there are 17 different cancer columns in UK Biobank's data, this works by stretching the 17xn columns into a 1 x 22*n one dimensional structure
+	
+	datesvars <- list()
+	cancersvars <- list()
+	agevars <- list()
+	histologyvars <- list()
+	behaviourvars <- list()
+
+	# Create a loop to generate the list elements
+	for (i in 0:21) {
+		datesvars[i+1] <- paste0('p40005_i', i)
+		cancersvars[i+1] <- paste0('p40006_i', i)
+		agevars[i+1] <- paste0('p40008_i', i)
+		histologyvars[i+1] <- paste0('p40011_i', i)
+		behaviourvars[i+1] <- paste0('p40012_i', i)
+	}
+	
+	dateslist=unlist(data[,unlist(datesvars)])
+	cancerslist=unlist(data[,unlist(cancersvars)])
+	agelist=unlist(data[,unlist(agevars)])
+	histologylist=unlist(data[,unlist(histologyvars)])
+	behaviourlist=unlist(data[,unlist(behaviourvars)])
+
+
+	data=data.frame(eid=ids,date=dateslist,site=cancerslist,age=agelist,histology=histologylist,behaviour=behaviourlist)%>%mutate(date=as.Date(date))
 	codes3=paste(codes,collapse='|')
-	data=data[grep(codes3,data$cancer),] #if someone does have multiple cancers, now everything is one cancer per line, this grep will get rid of those records
+	data=data[grep(codes3,data$site),] #if someone does have multiple cancers, now everything is one cancer per line, this grep will get rid of those records
+
 	return(data)
 }
 
