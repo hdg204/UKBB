@@ -56,7 +56,7 @@ read_GP <- function(codes,file='GP_gp_clinical.csv') {
 	}
 	
 	data2=inner_join(data2,baseline_table%>%select(eid,dob,assess_date))
-	data=data%>%mutate(event_age=as.numeric((event_dt-dob)/365.25),prev=event_dt<assess_date)
+	data2=data2%>%mutate(event_age=as.numeric((event_dt-dob)/365.25),prev=event_dt<assess_date)
 	return(data2)
 }
 
