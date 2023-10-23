@@ -21,6 +21,10 @@ system('dx download file-GZJKVv8J9qP9xGfpK5KpP5G9') # download self report
 system('dx download file-GZJ9bbQJj59YBg8j4Kffpx9v') # download data coding 3
 system('dx download file-GZJ9Z98Jj59YBg8j4Kffpx78') # download data coding 4
 system('dx download file-GZJ9Z98Jj59gQ0zX6p3Jx3p9') # download data coding 6
+system('dx download file-GZq40X0Jj59QzkKqx73PX3ff') # download ICD-O3 coding
+
+source_url("https://raw.githubusercontent.com/hdg204/UKBB/main/new_baseline.R") #create baseline table
+
 
 # This function reads GP records in from the file GP_gp_clinical.csv. It first greps the file through system so it doesn't read in any of the wrong codes. I have experimented with a few different options for this and I found this to be the fastest
 read_GP <- function(codes,file='GP_gp_clinical.csv') {
@@ -50,6 +54,9 @@ read_GP <- function(codes,file='GP_gp_clinical.csv') {
 		data2=rbind(data2,filter(data,read_3==codes[i]))
 		data2=rbind(data2,filter(data,read_2==codes[i]))
 	}
+	
+	data2=inner_join(data2,baseline_table%>%select(eid,dob,assess_date))
+	data=data%>%mutate(event_age=as.numeric((event_dt-dob)/365.25),prev=event_dt<assess_date)
 	return(data2)
 }
 
@@ -68,6 +75,8 @@ read_OPCS <- function(codes,filename='HES_hesin_oper.csv') {
 	data=read.csv('temp.csv',header=FALSE)
 	colnames(data)= opcs_header
 	data=data%>%mutate(opdate=as.Date(opdate))
+	data=inner_join(data,baseline_table%>%select(eid,dob,assess_date))
+	data=data%>%mutate(op_age=as.numeric((epistart-dob)/365.25),prev=opdate<assess_date)
 	return(data)
 }
 
@@ -90,6 +99,8 @@ read_ICD10 <- function(codes,diagfile='HES_hesin_diag.csv',recordfile='HES_hesin
 	records=read.csv(recordfile)
 	data2=inner_join(data,records)
 	data2=data2%>%mutate(epistart=as.Date(epistart),epiend=as.Date(epiend))
+	data2=inner_join(data2,baseline_table%>%select(eid,dob,assess_date))
+	data2=data2%>%mutate(diag_age=as.numeric((epistart-dob)/365.25),prev=epiend<assess_date)
 	return(data2)
 }
 
@@ -172,10 +183,12 @@ read_cancer <- function(codes,file='cancer_participant.csv') {
 	behaviourlist=unlist(data[,unlist(behaviourvars)])
 
 
-	data=data.frame(eid=ids,date=dateslist,site=cancerslist,age=agelist,histology=histologylist,behaviour=behaviourlist)%>%mutate(date=as.Date(date))
+	data=data.frame(eid=ids,reg_date=dateslist,site=cancerslist,age=agelist,histology=histologylist,behaviour=behaviourlist)%>%mutate(reg_date=as.Date(reg_date))
 	codes3=paste(codes,collapse='|')
 	data=data[grep(codes3,data$site),] #if someone does have multiple cancers, now everything is one cancer per line, this grep will get rid of those records
-
+	data=inner_join(data,baseline_table%>%select(eid,dob,assess_date))
+	data=data%>%mutate(diag_age=as.numeric((reg_date-dob)/365.25),prev=reg_date<assess_date,code=paste0(histology,'/',behaviour))
+	data=data%>%left_join(read.table('ICDO3.csv',sep='\t',header=TRUE)%>%rename(description=histology))
 	return(data)
 }
 
