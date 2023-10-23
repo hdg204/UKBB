@@ -235,7 +235,7 @@ first_occurence=function(ICD10='',GP='',OPCS='',cancer=''){
     ICD10_records=read_ICD10(ICD10)%>%mutate(date=epistart)%>%select(eid,date)%>%mutate(source='HES')
     OPCS_records=read_OPCS(OPCS)%>%mutate(date=opdate)%>%select(eid,date)%>%mutate(source='OPCS')
     GP_records=read_GP(GP)%>%mutate(date=event_dt)%>%select(eid,date)%>%mutate(source='GP')
-    cancer_records=read_cancer(cancer)%>%select(eid,date)%>%mutate(source='Cancer_Registry')
+    cancer_records=read_cancer(cancer)%>%mutate(date=reg_date)%>%select(eid,date)%>%mutate(source='Cancer_Registry')
     all_records=rbind(ICD10_records,OPCS_records)%>%rbind(GP_records)%>%rbind(cancer_records)%>%mutate(date=as.Date(date))
     all_records=all_records%>%group_by(eid)%>%top_n(-1,date)%>%distinct()
 	return(all_records)
