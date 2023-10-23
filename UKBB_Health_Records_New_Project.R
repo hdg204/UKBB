@@ -76,7 +76,7 @@ read_OPCS <- function(codes,filename='HES_hesin_oper.csv') {
 	colnames(data)= opcs_header
 	data=data%>%mutate(opdate=as.Date(opdate))
 	data=inner_join(data,baseline_table%>%select(eid,dob,assess_date))
-	data=data%>%mutate(op_age=as.numeric((epistart-dob)/365.25),prev=opdate<assess_date)
+	data=data%>%mutate(op_age=as.numeric((opdate-dob)/365.25),prev=opdate<assess_date)
 	return(data)
 }
 
