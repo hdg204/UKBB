@@ -36,7 +36,7 @@ read_GP <- function(codes,file='GP_gp_clinical.csv') {
 	if (codes[1]==''){
 		return(read.table(text = "",col.names = gp_header))
 	}
-	
+	codes <- paste0(",", codes)
 	codes2=paste(codes,collapse='\\|') #turn, e.g. 'code1,code2 into code1\\|code2 for use in a grep
 	grepcode=paste('grep \'',codes2,'\' ', file, '> temp.csv',sep='') #build a grep command using paste
 	system(grepcode) #grep all codes inputted from the GP clinical table into temp.csv
@@ -68,6 +68,7 @@ read_OPCS <- function(codes,filename='HES_hesin_oper.csv') {
 	if(codes[1]==''){
 		return(read.table(text = "",col.names = opcs_header))
 	}
+	codes <- paste0(",", codes)
 	codes2=paste(codes,collapse='\\|')
 	grepcode=paste('grep \'',codes2,'\' ', filename, '> temp.csv',sep='')
 	system(grepcode)
@@ -155,7 +156,7 @@ read_cancer <- function(codes,file='cancer_participant.csv') {
 	if(codes[1]==''){
 		return(read.table(text = "",col.names = cancer_header))
 	}
-	codes <- paste0(",", codes)
+	codes <- paste0("\"", codes)
 	codes2=paste(codes,collapse='\\|')
 	grepcode=paste('grep \'',codes2,'\' ', file, '> temp.csv',sep='') #it is possible that this will grep out other cancers too, if someone has multiple, as this extracts lines not columns
 	system(grepcode)
@@ -285,7 +286,7 @@ read_death <- function(codes,diagfile='death_death_cause.csv',recordfile='death_
 	if(codes[1]==''){
 		return(read.table(text = "",col.names = death_header))
 	}
-	codes <- paste0(",", codes)
+	codes <- paste0("\"", codes)
 	codes2=paste(codes,collapse='\\|')
 	grepcode=paste('grep \'',codes2,'\' ', diagfile, '> temp.csv',sep='')
 	system(grepcode)
