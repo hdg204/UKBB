@@ -88,6 +88,8 @@ read_ICD10 <- function(codes,diagfile='HES_hesin_diag.csv',recordfile='HES_hesin
 	if(codes[1]==''){
 		return(read.table(text = "",col.names = icd10_header))
 	}
+	codes <- paste0(",", codes)
+	#grep -E ',(E11|E12),' HES_hesin_diag.csv > temp.csv
 	codes2=paste(codes,collapse='\\|')
 	grepcode=paste('grep \'',codes2,'\' ', diagfile, '> temp.csv',sep='')
 	system(grepcode)
@@ -275,7 +277,6 @@ read_GP_scripts <- function(codes,file='GP_gp_scripts.csv') {
  return(data2)
 }
 
-
 # The ICD10 funciton is a bit more complicated because the diagnosis table does not contain the dates. As a result, there are two different headers to deal with
 read_death <- function(codes,diagfile='death_death_cause.csv',recordfile='death_death.csv') {
 	death_header=c('dnx_death_id','eid','ins_index','dsource','source','date_of_death','level','cause_icd10')
@@ -299,7 +300,16 @@ read_death <- function(codes,diagfile='death_death_cause.csv',recordfile='death_
 	return(data2)
 }
 
-			      
+
+
+
+
+
+
+
+
+
+
 # # Below are some examples of how to read in some random codes for a few different things
 # GP_codes=c('XE2eD','22K..')
 # GP_records=read_GP(GP_codes)
