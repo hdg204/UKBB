@@ -22,6 +22,8 @@ system('dx download file-GZJ9bbQJj59YBg8j4Kffpx9v') # download data coding 3
 system('dx download file-GZJ9Z98Jj59YBg8j4Kffpx78') # download data coding 4
 system('dx download file-GZJ9Z98Jj59gQ0zX6p3Jx3p9') # download data coding 6
 system('dx download file-GZq40X0Jj59QzkKqx73PX3ff') # download ICD-O3 coding
+system('dx download file-GZKXVx8J9jFp1qpBQZ8z5PbJ') # download death records
+system('dx download file-GZKXVx8J9jFqG2GvJV8vzxK1') # download death causes
 
 source_url("https://raw.githubusercontent.com/hdg204/UKBB/main/new_baseline.R") #create baseline table
 
@@ -273,6 +275,31 @@ read_GP_scripts <- function(codes,file='GP_gp_scripts.csv') {
  return(data2)
 }
 
+
+# The ICD10 funciton is a bit more complicated because the diagnosis table does not contain the dates. As a result, there are two different headers to deal with
+read_death <- function(codes,diagfile='death_death_cause.csv',recordfile='death_death.csv') {
+	death_header=c('dnx_death_id','eid','ins_index','dsource','source','date_of_death','level','cause_icd10')
+	if(codes[1]==''){
+		return(read.table(text = "",col.names = death_header))
+	}
+	codes2=paste(codes,collapse='\\|')
+	grepcode=paste('grep \'',codes2,'\' ', diagfile, '> temp.csv',sep='')
+	system(grepcode)
+	if (as.numeric(file.info('temp.csv')[1])==0){
+		return(read.table(text = "",col.names = death_header))
+	}
+	data=read.csv('temp.csv',header=FALSE)
+	colnames(data)=c('dnx_death_cause_id','eid','ins_index','arr_index','level','cause_icd10')
+	#I think that the ins index is an index for that hospital admission so joining on those should add the dates
+	records=read.csv(recordfile)
+	data2=inner_join(data,records)
+	data2=data2%>%mutate(date_of_death=as.Date(date_of_death))
+	data2=inner_join(data2,baseline_table%>%select(eid,dob,assess_date))
+	data2=data2%>%mutate(death_age=as.numeric((date_of_death-dob)/365.25),prev=date_of_death<assess_date)
+	return(data2)
+}
+
+			      
 # # Below are some examples of how to read in some random codes for a few different things
 # GP_codes=c('XE2eD','22K..')
 # GP_records=read_GP(GP_codes)
