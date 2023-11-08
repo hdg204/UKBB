@@ -156,8 +156,9 @@ read_cancer <- function(codes,file='cancer_participant.csv') {
 	if(codes[1]==''){
 		return(read.table(text = "",col.names = cancer_header))
 	}
-	codes <- paste0("\"", codes)
-	codes2=paste(codes,collapse='\\|')
+	system(paste("sed -i 's/\"//g' ", 'cancer_participant.csv'))
+	codes2 <- paste0(",", codes)
+	codes3=paste(codes2,collapse='\\|')
 	grepcode=paste('grep \'',codes2,'\' ', file, '> temp.csv',sep='') #it is possible that this will grep out other cancers too, if someone has multiple, as this extracts lines not columns
 	system(grepcode)
 	if (as.numeric(file.info('temp.csv')[1])==0){
@@ -190,13 +191,14 @@ read_cancer <- function(codes,file='cancer_participant.csv') {
 
 
 	data=data.frame(eid=ids,reg_date=dateslist,site=cancerslist,age=agelist,histology=histologylist,behaviour=behaviourlist)%>%mutate(reg_date=as.Date(reg_date))
-	codes3=paste(codes,collapse='|')
-	data=data[grep(codes3,data$site),] #if someone does have multiple cancers, now everything is one cancer per line, this grep will get rid of those records
+	codes4=paste(codes,collapse='|')
+	data=data[grep(codes4,data$site),] #if someone does have multiple cancers, now everything is one cancer per line, this grep will get rid of those records
 	data=inner_join(data,baseline_table%>%select(eid,dob,assess_date))
 	data=data%>%mutate(diag_age=as.numeric((reg_date-dob)/365.25),prev=reg_date<assess_date,code=paste0(histology,'/',behaviour))
 	data=data%>%left_join(read.table('ICDO3.csv',sep='\t',header=TRUE)%>%rename(description=histology))
 	return(data)
 }
+
 
 read_selfreport <- function(codes,file='selfreport_participant.csv'){
 	data=read.csv(file)
