@@ -25,12 +25,20 @@ This repository contains an ensemble of functions for use analysing the UKBB rec
 
 ## Setup
 
-On an RStudio Workbench session on DNA Nexus, run
+On an RStudio Workbench session on DNA Nexus, on project 103356 run
 
 ```
 library(devtools) 
 source_url("https://raw.githubusercontent.com/hdg204/UKBB/main/UKBB_Health_Records_New_Project.R") 
 ```
+
+On 9072, run
+
+```
+library(devtools) 
+source_url("https://raw.githubusercontent.com/hdg204/UKBB/main/UKBB_Health_Records_Public.R") 
+```
+
 
 This will copy all files from the project directory onto your R session and make all functions available for use in R. This should take somewhere between 90 seconds and 2 minutes
 
