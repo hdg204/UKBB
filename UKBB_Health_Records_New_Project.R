@@ -37,7 +37,7 @@ read_GP <- function(codes,file='GP_gp_clinical.csv') {
 		return(read.table(text = "",col.names = gp_header))
 	}
 	codes2 <- paste0(",", codes)
-	codes3=paste(code2,collapse='\\|') #turn, e.g. 'code1,code2 into code1\\|code2 for use in a grep
+	codes3=paste(codes2,collapse='\\|') #turn, e.g. 'code1,code2 into code1\\|code2 for use in a grep
 	grepcode=paste('grep \'',codes3,'\' ', file, '> temp.csv',sep='') #build a grep command using paste
 	system(grepcode) #grep all codes inputted from the GP clinical table into temp.csv
 	
