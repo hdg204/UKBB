@@ -89,6 +89,7 @@ read_ICD10 <- function(codes,diagfile='HES_hesin_diag.csv',recordfile='HES_hesin
 	if(codes[1]==''){
 		return(read.table(text = "",col.names = icd10_header))
 	}
+	system(paste("sed -i 's/\"//g' ", 'HES_hesin_diag.csv'))
 	codes <- paste0(",", codes)
 	#grep -E ',(E11|E12),' HES_hesin_diag.csv > temp.csv
 	codes2=paste(codes,collapse='\\|')
