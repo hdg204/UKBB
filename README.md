@@ -39,8 +39,9 @@ library(devtools)
 source_url("https://raw.githubusercontent.com/hdg204/UKBB/main/UKBB_Health_Records_Public.R") 
 ```
 
+This will copy all files from the project directory onto your R session and make all functions available for use in R. This should take somewhere between 90 seconds and 2 minutes.
 
-This will copy all files from the project directory onto your R session and make all functions available for use in R. This should take somewhere between 90 seconds and 2 minutes
+**Please only install one version of the package. There will be compatibility issues if you have files from one project and code from another.**
 
 ## Extracting Healthcare Records
 
