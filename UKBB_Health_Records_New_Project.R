@@ -48,7 +48,7 @@ read_GP <- function(codes,file='GP_gp_clinical.csv') {
 	
 	data=read.csv('temp.csv',header=FALSE)
 	colnames(data)=c('eid', 'data_provider', 'event_dt', 'read_2', 'read_3', 'value1', 'value2', 'value3')
-	data = data %>% filter(!grepl("[a-zA-Z]", event_dt)) # this removes any line that has an alphabetic character in the date column, because Biobank puts them there sometimes and it breaks the next line
+	data = data %>% mutate(event_dt = ifelse(grepl("[a-zA-Z]", event_dt), "1901-01-01", event_dt)) # this removes any line that has an alphabetic character in the date column, because Biobank puts them there sometimes and it breaks the next line
 	data=data%>%mutate(event_dt=as.Date(event_dt)) #turn event_dt into a date variable
 	
 	#because of .s in GP code, other stuff might have been read in due to the grep, so I need a secondary filter here
