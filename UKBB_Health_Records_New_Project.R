@@ -12,9 +12,9 @@ library('dplyr')
 system('dx download file-GZKXxpQJKVzZ0BgzQZ1YYj9Z') # download GP registrations
 system('dx download file-GZKXxpQJKVzVb7gQvQbYfxKF') # download GP clinical
 system('dx download file-GZKXxpQJKVzxKb0FYfGg28v9') # download GP scripts
-system('dx download file-GZKXVqjJX72FFKKVYKqfj40z') # download HES Diagnoses
-system('dx download file-GZKXVqjJX729j2vjbGb0BYfJ') # download HES Records
-system('dx download file-GZKXVqjJX72JPkx613V5XxYB') # download OPCS Records
+system('dx download file-Gp36v5jJ0qKKgQXxxQ0gjf0f') # download HES Diagnoses
+system('dx download file-Gp36v5QJ0qKJv0pQ0X5Z2B5K') # download HES Records
+system('dx download file-Gp36v5jJ0qK58yQkJ06gzGvv') # download OPCS Records
 system('dx download file-GZKXgQjJY2Fkg1ZG4Bg8ZJBP') # download Cancer_Registry
 system('dx download file-GZJKVv8J9qP9xGfpK5KpP5G9') # download self report
 #system('dx download file-GFVkYq8JZ8kk76Kg0GG7yq5K') # download treatment - this is embedded in self report in the new file
@@ -24,6 +24,7 @@ system('dx download file-GZJ9Z98Jj59gQ0zX6p3Jx3p9') # download data coding 6
 system('dx download file-GZq40X0Jj59QzkKqx73PX3ff') # download ICD-O3 coding
 system('dx download file-GZKXVx8J9jFp1qpBQZ8z5PbJ') # download death records
 system('dx download file-GZKXVx8J9jFqG2GvJV8vzxK1') # download death causes
+
 
 source_url("https://raw.githubusercontent.com/hdg204/UKBB/main/new_baseline.R") #create baseline table
 
