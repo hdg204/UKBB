@@ -2,7 +2,7 @@
 curl https://www.chg.ox.ac.uk/~gav/resources/bgen_v1.1.4-Ubuntu16.04-x86_64.tgz > bgen.tgz
 curl https://www.chg.ox.ac.uk/~gav/resources/qctool_v2.0.8-CentOS_Linux7.6.1810-x86_64.tgz > qctool.tgz
 curl https://s3.amazonaws.com/plink1-assets/plink_linux_x86_64_20231211.zip > plink.zip
-curl https://s3.amazonaws.com/plink2-assets/plink2_linux_i686_20240625.zip > plink2.zip
+curl https://s3.amazonaws.com/plink2-assets/plink2_linux_x86_64_20240704.zip > plink2.zip
 
 tar -xvzf bgen.tgz
 tar -xvzf qctool.tgz
