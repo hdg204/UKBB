@@ -310,9 +310,14 @@ read_death <- function(codes,diagfile='death_death_cause.csv',recordfile='death_
 }
 
 
-
-
-
+Generate_GRS <- function(grs_file){
+  command=paste('./Generate_GRS.sh',grs_file)
+  system(command)
+  plink_score_df = read.table('score.profile', header = TRUE, stringsAsFactors = FALSE)
+  plink_score_df = plink_score_df %>% rename(eid=FID,score=SCORE)
+  plink_score_df = plink_score_df %>% select(eid,score)
+  return(plink_score_df)
+}
 
 
 
