@@ -5,8 +5,8 @@ curl https://s3.amazonaws.com/plink2-assets/plink2_linux_i686_20240625.zip > pli
 
 tar -xvzf bgen.tgz
 tar -xvzf qctool.tgz
-unzip plink.zip
-unzip plink2.zip
+unzip -o plink.zip
+unzip -o plink2.zip
 
 curl https://ftp.gnu.org/gnu/parallel/parallel-latest.tar.bz2 > parallel-latest.tar.bz2
 tar -xjf parallel-latest.tar.bz2
