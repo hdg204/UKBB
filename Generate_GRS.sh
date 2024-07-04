@@ -27,7 +27,7 @@ alias qctool='qctool_v2.0.8-CentOS\ Linux7.6.1810-x86_64/qctool'
 alias plink='./plink'
 
 cp bgen_v1.1.4-Ubuntu16.04-x86_64/bgenix bgenix
-cp qctool_v2.0.8-CentOS\ Linux7.6.1810-x86_64 qctool
+cp qctool_v2.0.8-CentOS\ Linux7.6.1810-x86_64/qctool qctool
 
 
 process_chromosome() {
