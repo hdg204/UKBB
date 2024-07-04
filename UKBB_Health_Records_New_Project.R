@@ -309,7 +309,9 @@ read_death <- function(codes,diagfile='death_death_cause.csv',recordfile='death_
 	return(data2)
 }
 
-system('curl https://raw.githubusercontent.com/hdg204/UKBB/main/Generate_GRS.sh > Generate_GRS.sh') 
+system('curl https://raw.githubusercontent.com/hdg204/UKBB/main/Generate_GRS.sh > Generate_GRS.sh
+system('chmod +777 Generate_GRS.sh')
+
 Generate_GRS <- function(grs_file){
   command=paste('./Generate_GRS.sh',grs_file)
   system(command)
