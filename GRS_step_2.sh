@@ -32,11 +32,18 @@ process_chromosome XY $1
 rm mergelist.txt
 for i in `seq 1 22`
 do
-    echo chr${i} >> mergelist.txt
+    if [ -f chr${i}.bim ]; then
+        echo chr${i} >> mergelist.txt
+    fi
 done
 
-echo chrX >> mergelist.txt
-echo chrXY >> mergelist.txt
+if [ -f chrX.bim ]; then
+    echo chrX >> mergelist.txt
+fi
+
+if [ -f chrXY.bim ]; then
+    echo chrXY >> mergelist.txt
+fi
 
 ./plink --merge-list mergelist.txt --make-bed --out merged_dataset
 awk 'NR>2 {print $1, $1, 0, 0, 0, 0}' "/mnt/project/Bulk/Imputation/UKB imputation from genotype/ukb22828_c1_b0_v3.sample" > merged_dataset.fam
