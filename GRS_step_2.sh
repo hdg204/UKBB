@@ -7,6 +7,18 @@ process_chromosome() {
     ./bgenix -g "/mnt/project/Bulk/Imputation/UKB imputation from genotype/ukb22828_c${i}_b0_v3.bgen" -incl-rsids ids${i} | ./qctool -g - -filetype bgen -og chr${i}.bed
 }
 
+pwd
+./configure --prefix=$HOME/.local
+make
+make install
+export PATH=$HOME/.local/bin:$PATH
+cd $home
+
+alias bgenix='bgen_v1.1.4-Ubuntu16.04-x86_64/bgenix'
+alias qctool='qctool_v2.0.8-CentOS\ Linux7.6.1810-x86_64/qctool'
+alias plink='./plink'
+
+
 export -f process_chromosome
 
 input_file=$1
