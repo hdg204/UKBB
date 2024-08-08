@@ -7,7 +7,9 @@ process_chromosome() {
     ./bgenix -g "/mnt/project/Bulk/Imputation/UKB imputation from genotype/ukb22828_c${i}_b0_v3.bgen" -incl-rsids ids${i} | ./qctool -g - -filetype bgen -og chr${i}.bed
 }
 
-pwd
+target_directory=$(find . -type d -name 'parallel-202*' -print -quit)
+cd "$target_directory"
+
 ./configure --prefix=$HOME/.local
 make
 make install
