@@ -19,9 +19,6 @@ unzip -o plink2.zip
 curl https://ftp.gnu.org/gnu/parallel/parallel-latest.tar.bz2 > parallel-latest.tar.bz2
 tar -xjf parallel-latest.tar.bz2
 
-target_directory=$(find . -type d -name 'parallel-202*' -print -quit)
-cd "$target_directory"
-
 dx download file-Gb53yZjJj59bVvzJZy28zK7V
 
 cp bgen_v1.1.4-Ubuntu16.04-x86_64/bgenix bgenix
