@@ -7,12 +7,12 @@ system('curl https://raw.githubusercontent.com/hdg204/Rdna-nexus/main/Example_GR
 
 library('dplyr')
 library('devtools')
-generate_grs=function(infile){
+generate_grs=function(infile,info=T){
   system(paste('./GRS_step_2.sh', infile))
   score=read.csv('score.profile',sep='')
   score=score%>%rename(eid=FID,score=SCORE)%>%select(eid,CNT,CNT2,score)
     
-  
+  if (info == T){
   #first apply QC steps. These commands find all the relevant information in the mfi files but only for the SNPs in the GRS
   for (i in 1:22){
       system(paste0("awk '$1 == ",i," {print $2}' ", infile, " | grep -w -f - ../../mnt/project/Bulk/Imputation/UKB\\ imputation\\ from\\ genotype/ukb22828_c",i,"_b0_v3.mfi.txt>infotemp"))
@@ -20,10 +20,13 @@ generate_grs=function(infile){
   }
   system(paste0("awk '$1 == ",23," {print $2}' ", infile, " | grep -w -f - ../../mnt/project/Bulk/Imputation/UKB\\ imputation\\ from\\ genotype/ukb22828_cX_b0_v3.mfi.txt>infotemp"))
   system(paste0("awk '{print $0, ",23,"}' infotemp >> info"))
-  system(paste0("awk '$1 == ",23," {print $2}' ", infile, " | grep -w -f - ../../mnt/project/Bulk/Imputation/UKB\\ imputation\\ from\\ genotype/ukb22828_cX_b0_v3.mfi.txt>infotemp"))
+  system(paste0("awk '$1 == ",23," {print $2}' ", infile, " | grep -w -f - ../../mnt/project/Bulk/Imputation/UKB\\ imputation\\ from\\ genotype/ukb22828_cXY_b0_v3.mfi.txt>infotemp"))
   system(paste0("awk '{print $0, ",23,"}' infotemp >> info"))
   info=read.csv('info',sep='',header=F)
   info=info%>%rename(ID=V1,rsid=V2,MAF=V6,info=V8)%>%select(ID,rsid,MAF,info)
-  return(c(score,info))
+  return(list(score=as.data.frame(score),info=as.data.frame(info)))
+  }else{
+    return(score)
+  }
 }
 
