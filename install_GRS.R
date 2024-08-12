@@ -10,7 +10,7 @@ library('devtools')
 generate_grs=function(infile){
   system(paste('./GRS_step_2.sh', infile))
   score=read.csv('score.profile',sep='')
-  score=score%>%rename(eid=FID,score=SCORE)%>%select(eid,CNT1,CNT2,score)
+  score=score%>%rename(eid=FID,score=SCORE)%>%select(eid,CNT,CNT2,score)
     
   
   #first apply QC steps. These commands find all the relevant information in the mfi files but only for the SNPs in the GRS
