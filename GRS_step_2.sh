@@ -2,8 +2,8 @@
 process_chromosome() {
     i=$1
     input_file=$2
-    grep -w "^$i" $input_file | awk '{print $2}' > bp${i}
-    grep -wFf bp${i} "/mnt/project/Bulk/Imputation/UKB imputation from genotype/ukb22828_c${i}_b0_v3.mfi.txt" | awk '{print $2}' > ids${i}
+    grep -w "^$i" $input_file | awk '{print $2,$3,$4}' > bp_alleles${i}
+    grep -wFf  bp_alleles${i} "/mnt/project/Bulk/Imputation/UKB imputation from genotype/ukb22828_c${i}_b0_v3.mfi.txt" | awk '{print $2}' > ids${i}
     ./bgenix -g "/mnt/project/Bulk/Imputation/UKB imputation from genotype/ukb22828_c${i}_b0_v3.bgen" -incl-rsids ids${i} | ./qctool -g - -filetype bgen -og chr${i}.bed
 }
 
