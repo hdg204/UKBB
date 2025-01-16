@@ -291,7 +291,6 @@ read_death <- function(codes,diagfile='death_death_cause.csv',recordfile='death_
 	if(codes[1]==''){
 		return(read.table(text = "",col.names = death_header))
 	}
-	codes <- paste0("\"", codes)
 	codes2=paste(codes,collapse='\\|')
 	grepcode=paste('grep \'',codes2,'\' ', diagfile, '> temp.csv',sep='')
 	system(grepcode)
