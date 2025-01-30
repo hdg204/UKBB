@@ -162,7 +162,7 @@ read_cancer <- function(codes,file='cancer_participant.csv') {
 	system(paste("sed -i 's/\"//g' ", 'cancer_participant.csv'))
 	codes2 <- paste0(",", codes)
 	codes3=paste(codes2,collapse='\\|')
-	grepcode=paste('grep \'',codes2,'\' ', file, '> temp.csv',sep='') #it is possible that this will grep out other cancers too, if someone has multiple, as this extracts lines not columns
+	grepcode=paste('grep \'',codes3,'\' ', file, '> temp.csv',sep='') #it is possible that this will grep out other cancers too, if someone has multiple, as this extracts lines not columns
 	system(grepcode)
 	if (as.numeric(file.info('temp.csv')[1])==0){
 		return(read.table(text = "",col.names = cancer_header))
