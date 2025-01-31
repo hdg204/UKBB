@@ -96,8 +96,7 @@ The line level grep might also accidentally tag other things that happen to matc
 
 # For users from outside the University of Exeter
 
-The code in this repository has been written to run from Exeter's application 103356. If you are not an Exeter user, you will need to generate the files yourself.
-
+The code in this repository has been written to run from Exeter's application 103356. If you are not an Exeter user, you will need to generate the files yourself. Below is a readme for creating the necessary tables to run `read_ICD10` and `read_OPCS` from the HES records. A similar process can be followed for GP, death and cancer.
 
 In your base directory, click on the dataset:
 
