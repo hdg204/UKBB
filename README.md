@@ -93,3 +93,53 @@ all_data = full_join(baseline, frozen_shoulder)
 The script relies on grepping entire lines from a CSV. As ICD9 codes are purely numeric, these can match on participant IDs and cannot currently be read in. I'm working on replacing the grep with an awk command which should address this issue and allow ICD9 codes to be read.
 
 The line level grep might also accidentally tag other things that happen to match. This is still in testing and I'd recommend looking at the data to check there isn't anything in there you don't want.
+
+# For users from outside the University of Exeter
+
+The code in this repository has been written to run from Exeter's application 103356. If you are not an Exeter user, you will need to generate the files yourself.
+
+
+In your base directory, click on the dataset:
+
+<img src="https://github.com/user-attachments/assets/dd54e34c-ca48-4479-a06c-a0f90e1cb4a1" alt="Your image title" width="750"/>
+
+Click on data preview, and then add column, and you should be able to active a drop down:
+
+<img src="https://github.com/user-attachments/assets/f9b50efe-43db-4096-9e5f-5419b9aa6971" alt="Your image title" width="350"/>
+ 
+Add the following columns from record-level access:
+*	Hospitalisation Record
+    *	Participant ID
+    *	Instance index
+    * Inpatient record origin
+    *	Inpatient record format
+    *	Episode start date
+    *	Episode end date
+    *	Duration of episode
+    *	(You can add others if they interest you)
+*	Hospital Diagnosis Record
+    * All columns
+*	Hospital Operation Record
+    * All Columns
+ 	
+Your screen should look something like this
+
+<img src="https://github.com/user-attachments/assets/cff17c1c-5473-402f-b290-445427d05f28" alt="Your image title" width="750"/>
+ 
+Save the cohort in a sensible place. Then  start a new analysis and click on the table exporter and set up a run that looks like the following, where record is the cohort you just saved. Make sure all options contain the same (except the record ID, which will be different for you):
+
+<img src="https://github.com/user-attachments/assets/de3bf844-8998-4241-b20a-ad4fd4b5d131" alt="Your image title" width="300"/>
+
+When this has run, you’ll get an email and you should see the following files wherever you told it to output them:
+
+<img src="https://github.com/user-attachments/assets/51987fa8-c419-473f-879b-e0851bd7ccf4" alt="Your image title" width="750"/>
+
+You won’t have hesin_critical though, I took that out because it wasn’t… er… critical. How ironic.
+
+This will give you csv files of all of the HES records in UKBB. These are the files my code is looking for. However, the file IDs will not work for you. In the following lines of UKBB_Health_Records_New_Project.R, you’ll need to change the following lines to use your own file IDs (shown right of picture above)
+
+```
+system('dx download file-Gp36v5jJ0qKKgQXxxQ0gjf0f') # download HES Diagnoses
+system('dx download file-Gp36v5QJ0qKJv0pQ0X5Z2B5K') # download HES Records
+system('dx download file-Gp36v5jJ0qK58yQkJ06gzGvv') # download OPCS Records
+```
