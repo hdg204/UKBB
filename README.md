@@ -2,6 +2,8 @@
 
 This repository contains an ensemble of functions for use analysing the UKBB records on DNA Nexus.
 
+**Terms of use:** This software has been provided free of charge for the academic community. In return, the only requirement is that you make your code openly available in kind for any paper that uses my functions, and acknowledge (ideally, cite) this repository in your work.
+
 # Available Functions
 
 `read_GP` Reads data from the GP clinical records. It takes a list of read3 or read2 codes and returns one line per matching record, including eid date, value, and read code
