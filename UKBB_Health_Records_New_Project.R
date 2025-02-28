@@ -24,6 +24,7 @@ system('dx download file-GZJ9Z98Jj59gQ0zX6p3Jx3p9') # download data coding 6
 system('dx download file-GZq40X0Jj59QzkKqx73PX3ff') # download ICD-O3 coding
 system('dx download file-GZKXVx8J9jFp1qpBQZ8z5PbJ') # download death records
 system('dx download file-GZKXVx8J9jFqG2GvJV8vzxK1') # download death causes
+system('dx download file-Gz0jqg0Jf08B1XP8y0X45K0V') # download cancer registry tsv (with ICD9)
 
 
 source_url("https://raw.githubusercontent.com/hdg204/UKBB/main/new_baseline.R") #create baseline table
@@ -321,6 +322,70 @@ Generate_GRS <- function(grs_file){
 }
 
 
+read_cancer_2 <- function(codes,file='cancer_participant.tsv') {
+	#this function reads from the cancer registry, which is in a wide format and requires a much different way of extracting the data
+	cancer_header=c("eid", "reg_date" , "site" , "age" , "histology" , "behaviour", "dob" , "assess_date", "diag_age" , "prev", "code", "description")
+	if(codes[1]==''){
+		return(read.table(text = "",col.names = cancer_header))
+	}
+	system(paste("sed -i 's/\"//g' ", 'cancer_participant.tsv'))
+	codes2 <- paste0("\t", codes)
+	codes3=paste(codes2,collapse='\\|')
+	grepcode=paste('grep \'',codes3,'\' ', file, '> temp.tsv',sep='') #it is possible that this will grep out other cancers too, if someone has multiple, as this extracts lines not columns
+	system(grepcode)
+	if (as.numeric(file.info('temp.tsv')[1])==0){
+		return(read.table(text = "",col.names = cancer_header))
+	}
+	data=read.table('temp.tsv', header = FALSE, sep = "\t", quote="")
+	data=data[,1:126]
+	colnames(data)=colnames(read.table(file = "cancer_participant.tsv", nrows = 1, header = TRUE, sep = "\t"))
+	ids=rep(data[,1],22) # there are 17 different cancer columns in UK Biobank's data, this works by stretching the 17xn columns into a 1 x 22*n one dimensional structure
+	
+	datesvars <- list()
+	cancersvarsICD10 <- list()
+	agevars <- list()
+	histologyvars <- list()
+	behaviourvars <- list()
+	cancersvarsICD9 <- list()
+	
+	data=mutate(data,p40013_i15=' ')%>%
+		mutate(p40013_i16=' ')%>%
+		mutate(p40013_i17=' ')%>%
+		mutate(p40013_i18=' ')%>%
+		mutate(p40013_i19=' ')%>%
+		mutate(p40013_i20=' ')%>%
+		mutate(p40013_i21=' ')
+
+	# Create a loop to generate the list elements
+	for (i in 0:21) {
+		datesvars[i+1] <- paste0('p40005_i', i)
+		cancersvarsICD10[i+1] <- paste0('p40006_i', i)
+		agevars[i+1] <- paste0('p40008_i', i)
+		histologyvars[i+1] <- paste0('p40011_i', i)
+		behaviourvars[i+1] <- paste0('p40012_i', i)
+		cancersvarsICD9[i+1] <- paste0('p40013_i', i)
+	}
+	
+	dateslist=unlist(data[,unlist(datesvars)])
+	cancerslistICD10=unlist(data[,unlist(cancersvarsICD10)])
+	cancerslistICD9=unlist(data[,unlist(cancersvarsICD9)])
+	agelist=unlist(data[,unlist(agevars)])
+	histologylist=unlist(data[,unlist(histologyvars)])
+	behaviourlist=unlist(data[,unlist(behaviourvars)])
+
+	data=data.frame(eid=ids,reg_date=dateslist,siteICD10=cancerslistICD10,siteICD9=cancerslistICD9,age=agelist,histology=histologylist,behaviour=behaviourlist)%>%mutate(reg_date=as.Date(reg_date))
+	codes4=paste(codes,collapse='|')
+	data1=data[grep(codes4,data$siteICD10),] #if someone does have multiple cancers, now everything is one cancer per line, this grep will get rid of those records
+	data2=data[grep(codes4,data$siteICD9),]
+	data=rbind(data1,data2)
+	data$eid=as.numeric(data$eid)
+	data=inner_join(data,baseline_table%>%select(eid,dob,assess_date,assess_age))
+	data=data%>%mutate(diag_age=as.numeric((reg_date-dob)/365.25),prev=reg_date<assess_date,code=paste0(histology,'/',behaviour))
+	no_date=is.na(data$reg_date)
+	data$prev[no_date]=data$age[no_date]<data$assess_age[no_date]
+	data=data%>%left_join(read.table('ICDO3.csv',sep='\t',header=TRUE)%>%rename(description=histology))
+	return(data)
+}
 
 
 
