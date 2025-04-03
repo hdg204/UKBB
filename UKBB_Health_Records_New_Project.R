@@ -154,6 +154,7 @@ read_ICD9 <- function(codes,diagfile='HES_hesin_diag.csv',recordfile='HES_hesin.
 }
 
 
+
 read_cancer <- function(codes,file='cancer_participant.csv') {
 	#this function reads from the cancer registry, which is in a wide format and requires a much different way of extracting the data
 	cancer_header=c("eid", "reg_date" , "site" , "age" , "histology" , "behaviour", "dob" , "assess_date", "diag_age" , "prev", "code", "description")
