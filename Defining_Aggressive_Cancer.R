@@ -56,9 +56,9 @@ diag_prca_aggressive <- diag_prca %>%
   left_join(radiotherapy_flag,     by = "eid") %>%
   mutate_if(is.numeric, coalesce, 0)
 
-# benign: no evidence of aggressive disease
-# unsure: treated with surgery or radiotherapy or metastatic diagnosis (not death)
-# aggressive: cancer death within 2 years
+# The following command summarises this into an 'aggressiveness' variable, which is ordered by:
+# benign, treated (surgery or radiotherapy), treated with chemo, any cancer death, or prostate cancer death
+# of the ~16,000 cases, 10,000 are benign, 5,000 are treated with surgery / radiotherapy and 1,000 resulted in chemotherapy or death. 400 of these deaths were prostate cancer
 
 diag_prca_aggressive <- diag_prca_aggressive %>%
   mutate(aggressiveness = case_when(
