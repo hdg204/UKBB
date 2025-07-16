@@ -21,7 +21,8 @@ FH_diseases <- FH %>%
   filter(disease != "", !is.na(disease)) %>%
   distinct(eid, disease) %>%
   mutate(value = 1) %>%
-  pivot_wider(names_from = disease, values_from = value, values_fill = list(value = 0))
+  pivot_wider(names_from = disease, values_from = value, values_fill = list(value = 0)) %>%
+  rename_with(~paste0("FH_", .x), .cols = -eid)  # add FH_ prefix to disease columns only
 
 # Step 3: Join back to retain all eids
 FH_reformat <- all_ids %>% left_join(FH_diseases, by = "eid")
