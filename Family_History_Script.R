@@ -27,4 +27,7 @@ FH_diseases <- FH %>%
 # Step 3: Join back to retain all eids
 FH_reformat <- all_ids %>% left_join(FH_diseases, by = "eid")
 
+FH_reformat <- FH_reformat %>%
+  rename_with(~gsub(" ", "_", .x))
+
 FH_reformat$n_FH_answers=(FH[,2]=='')+(FH[,3]=='')+(FH[,3]=='')+(FH[,4]=='')
