@@ -25,6 +25,8 @@ surgery <- read_OPCS(c('M61', 'M61.1', 'M61.2', 'M61.3'))
 chemotherapy <- read_OPCS(c('X70', 'X71', 'X72'))
 # Radiotherapy (external, brachytherapy, planning, unspecified)
 radiotherapy <- read_OPCS(c('X65', 'X66', 'X67', 'X69'))
+# androgen (Ella definition)
+androgen <- read_OPCS(c('X74.1', 'X38.3', 'S52.5', 'S52.6'))
 
 # Helper function that flags events within a window, given a dataframe, the age column corresponding to age at that event in that dataframe, and the name of the event. Everything assumes that diag_prca is the dataframe with all the cancer diagnosis informaiton
 flag_event <- function(events_df, age_col, event_name) {
@@ -44,6 +46,7 @@ metastatic_death_flag <- flag_event(metastatic_death, death_age, metastatic_deat
 chemo_flag            <- flag_event(chemotherapy, op_age, chemotherapy)
 surgery_flag          <- flag_event(surgery, op_age, surgery)
 radiotherapy_flag     <- flag_event(radiotherapy, op_age, radiotherapy)
+androgen_flag         <- flag_event(androgen, op_age, androgen)
 
 # Combine with original table to make a new one called aggressive
 diag_prca_aggressive <- diag_prca %>%
@@ -54,21 +57,23 @@ diag_prca_aggressive <- diag_prca %>%
   left_join(chemo_flag,            by = "eid") %>%
   left_join(surgery_flag,          by = "eid") %>%
   left_join(radiotherapy_flag,     by = "eid") %>%
+  left_join(androgen_flag,     by = "eid") %>%
   mutate_if(is.numeric, coalesce, 0)
 
 # The following command summarises this into an 'aggressiveness' variable, which is ordered by:
-# benign, treated (surgery or radiotherapy), treated with chemo, any cancer death, or prostate cancer death
-# of the ~16,000 cases, 10,000 are benign, 5,000 are treated with surgery / radiotherapy and 1,000 resulted in chemotherapy or death. 400 of these deaths were prostate cancer
+# indolent, treated (surgery or radiotherapy), treated with chemo, any cancer death, or prostate cancer death
+# of the ~16,000 cases, 10,000 are indolent, 5,000 are treated with surgery / radiotherapy and 1,000 resulted in chemotherapy or death. 400 of these deaths were prostate cancer
 
 diag_prca_aggressive <- diag_prca_aggressive %>%
   mutate(aggressiveness = case_when(
     prca_death == 1                     ~ "prca death",
     cancer_death == 1                   ~ "cancer death",
     chemotherapy == 1                   ~ "chemo",
+    androgen == 1                       ~ "treated (androgen inhibitors)",
     surgery == 1 | radiotherapy == 1    ~ "treated (surgery/RT)",
-    TRUE                                ~ "benign"
+    TRUE                                ~ "indolent"
   )) %>%
   mutate(aggressiveness = factor(aggressiveness,
-    levels = c("benign", "treated (surgery/RT)", "chemo", "any cancer death", "prca death"),
+    levels = c("indolent", "treated (surgery/RT)", "treated (androgen inhibitors)", "chemo", "any cancer death", "prca death"),
     ordered = TRUE
   ))
