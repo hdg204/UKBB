@@ -106,6 +106,8 @@ read_ICD10 <- function(codes,diagfile='HES_hesin_diag.csv',recordfile='HES_hesin
 	#I think that the ins index is an index for that hospital admission so joining on those should add the dates
 	data=data%>%select(dnx_hesin_diag_id,eid,ins_index,arr_index,classification,diag_icd9,diag_icd10)
 	records=read.csv(recordfile)
+	data$eid=as.numeric(data$eid)
+	records$eid=as.numeric(records$eid)
 	data2=inner_join(data,records)
 	data2=data2%>%mutate(epistart=as.Date(epistart),epiend=as.Date(epiend))
 	data2=inner_join(data2,baseline_table%>%select(eid,dob,assess_date))
