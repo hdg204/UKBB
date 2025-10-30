@@ -5,8 +5,6 @@
 # The reformating of the dataframe takes about 30 seconds
 # Harry Green 16/07/2025
 # ------------------------------------------------------------------------------
-library('dplyr')
-install.packages('tidyverse')
 library(tidyverse)
 system('dx download file-J1qg110JXJJFQQ6p52gYgJ11')
 FH=read.csv('family_history_participant.csv')
