@@ -1,4 +1,17 @@
 library(devtools)
+
+# set project and record ID. TODO call these from context IDs
+projectid <- "project-GbZ9g7QJVJzZVQj45j6xgxZ8"
+rid <- "record-Gbf3bQjJbPb6Bgq60z0z2VVq"
+# Assign joint dataset project-id:record-id
+dataset <- glue::glue("{projectid}:{rid}")
+
+# get dataset
+cmd <- glue::glue("dx extract_dataset {dataset} -ddd")
+system(cmd)
+
+#
+
 system('dx download file-GP7pZ9jJqYjVzqxY5B4qf1zV')
 baseline_table=read.csv('data_participant.csv')
 
