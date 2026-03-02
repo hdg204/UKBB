@@ -1,3 +1,7 @@
+# NEW VERSION AVAILABLE
+
+**This version of my code relies on the user to have access to my project on UK Biobank application 103356. A newer version (that doesn't) is available at https://github.com/ExeterGenetics/ukbextractR/tree/main and this is the version that I am actively maintaining**
+
 # UKBB Health Care Records
 
 This repository contains an ensemble of functions for use analysing the UKBB records on DNA Nexus.
