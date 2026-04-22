@@ -24,7 +24,7 @@ surgery <- read_OPCS(c('M61', 'M61.1', 'M61.2', 'M61.3'))
 # Chemotherapy (IV, IM, unspecified)
 chemotherapy <- read_OPCS(c('X70', 'X71', 'X72'))
 # Radiotherapy (external, brachytherapy, planning, unspecified)
-radiotherapy <- read_OPCS(c('X65', 'X66', 'X67', 'X69'))
+radiotherapy <- read_OPCS(c('X65', 'X67', 'X68', 'X69'))
 # androgen (Ella definition)
 androgen <- read_OPCS(c('X74.1', 'X38.3', 'S52.5', 'S52.6'))
 
